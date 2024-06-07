@@ -10,7 +10,7 @@ Our project, "Signs-in-Music," aims to develop a graphic and audio translator of
 ## How it works
 1. Real-Time Video Capture and Gesture Recognition:
    * Python code captures real-time video from a computer camera.
-   * Hand gestures are recognized and associated with corresponding labels (e.g., the gesture for "I
+   * Hand gestures are recognized and associated with corresponding labels (e.g., 🤟 the gesture for "I
      love you").
 2. Integration with Spotify API:
    * The recognized word is used to search for songs with the same word in their title.
