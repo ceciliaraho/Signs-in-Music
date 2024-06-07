@@ -9,8 +9,8 @@ Our project, "Signs-in-Music," aims to develop a graphic and audio translator of
 
 ## How it works
 1. Real-Time Video Capture and Gesture Recognition:
-   * Dataset Creation: We created a custom dataset consisting of 10 specific signs: 'art', 'baby', 'cherry', 'hello', 'iloveyou', 'mommy', 'music', 'party', 'sun', and 'thanks'.
-   * Model Training: Using this dataset, we trained a neural network to recognize these gestures.
+   * Dataset Creation (implemented in `main1.py` and `utils.py`): We created a custom dataset consisting of 10 specific signs: 'art', 'baby', 'cherry', 'hello', 'iloveyou', 'mommy', 'music', 'party', 'sun', and 'thanks'.
+   * Model Training (implemented in `data_processing.py`): Using this dataset, we trained a neural network to recognize these gestures.
    * Neural Network Architecture:
      - Input Layer: Receives images of hand gestures.
      - Convolutional Layers: Extracts spatial features from the images using Conv1D layers.
@@ -28,7 +28,7 @@ Our project, "Signs-in-Music," aims to develop a graphic and audio translator of
         - Output Dense layer: Softmax activation to classify into one of the 10 gestures.
    * Compilation: The model is compiled with Adam optimizer, categorical cross-entropy loss, and categorical accuracy metrics.
 
-   * Python code: Captures real-time video from a computer camera and uses the trained model to recognize hand gestures. Each gesture is associated with a corresponding label (e.g., 🤟 the gesture for "I love you").
+   * Python code (implemented in `analysis_visualization.py` and `utils.py`): Captures real-time video from a computer camera and uses the trained model to recognize hand gestures. Each gesture is associated with a corresponding label (e.g., 🤟 the gesture for "I love you").
 
 3. Integration with Spotify API:
    * The recognized word is used to search for songs with the same word in their title.
