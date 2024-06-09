@@ -8,7 +8,7 @@
 /* ----------------------------------------------- */
 
 let color;
-let color_line = "#fe4646";
+let color_line;
 let energies = [];
 let width;
 let particles_number;
@@ -20,8 +20,7 @@ fetch('../song_parameters.json')
   .then(response => response.text())
   .then(jsonString => {
     const data = JSON.parse(jsonString);
-    console.log(data);
-    // Qui puoi accedere ai dati JSON
+    
     var key = data.key;
     const mode = data.mode;
     if (mode == 0){
@@ -97,7 +96,7 @@ fetch('../song_parameters.json')
     // Calculate the maximum value in the array
     const max = Math.max(...energy_array);
     
-    // Normalize the array by dividing each element by the sum and multiplying by the maximum value
+    // Normalize the array
     energies = energy_array.map(val => 4 * (val / sum) * max);
     console.log(energies);
     initParticlesJS();
@@ -108,12 +107,12 @@ fetch('../song_parameters.json')
       // Initialize the audio context
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-      // Create a MediaElementAudioSourceNode from the audio element
+      
       const audioElement = document.createElement('audio');
-      audioElement.src = '../selectedSong.mp3'; // Replace with the path to your audio file
+      audioElement.src = '../selectedSong.mp3'; 
       const audioSource = audioContext.createMediaElementSource(audioElement);
 
-      // Connect the audio source to the audio context's destination (speakers)
+      
       audioSource.connect(audioContext.destination);
       function chSpeed(energy, i) {
         setInterval(
@@ -129,13 +128,11 @@ fetch('../song_parameters.json')
       audioElement.play();
       const checkInterval = setInterval(() => {
         if (audioElement.currentTime > 0 && audioContext.currentTime > 0) {
-            // Audio is playing
             clearInterval(checkInterval); // Stop checking
             chSpeed(energies, energies.length - 1);
         }
     }, 10);
       
-      //chSpeed(energies, 0);
     }
     playButton.addEventListener("click", startMusic);
     var count_particles, stats, update;
@@ -163,13 +160,6 @@ fetch('../song_parameters.json')
   });
 
 var pJS = function(tag_id, params){
- 
-  
-  //var multiplierDim = 1;
-  //var multiplierSpeed = energies[0];
-  //var arrayEnergy = [0, 4, 12, 20, 0, 40];
-  //var arrayEnergy = energyArray;
-  //console.log(energies);
 
   
   var canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
@@ -1764,7 +1754,7 @@ function initParticlesJS(){
           "distance": 450,
           "color": color_line,
           "opacity": 0.4,
-          "width": width*0.6
+          "width": width*0.8
         },
         "move": {
           "enable": true,
