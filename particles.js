@@ -10,7 +10,11 @@
 let color;
 let color_line = "#fe4646";
 let energies = [];
-let frame = 0;
+let width;
+let particles_number;
+var multiplierSpeed = 1;
+
+
 
 fetch('../song_parameters.json')
   .then(response => response.text())
@@ -18,8 +22,15 @@ fetch('../song_parameters.json')
     const data = JSON.parse(jsonString);
     console.log(data);
     // Qui puoi accedere ai dati JSON
-    const key = data.key;
-    console.log(key);
+    var key = data.key;
+    const mode = data.mode;
+    if (mode == 0){
+      key = (key + 3) % 12;
+    }
+    particles_number = Math.ceil(data.energy * 80); 
+    width = data.loudness;
+    width = (width + 60) / 60;
+    width = (100^width)/12;
     
     switch(key) {
       case 0: //C
@@ -78,9 +89,6 @@ fetch('../song_parameters.json')
         color = "#ffffff"
         color_line = "#8f8f8f"
     }
-    console.log(color);
-
-    //initParticlesJS();
     
     energies[0] = data.instant_energy[0] / 50;
     var energy_array = data.instant_energy;
@@ -94,6 +102,42 @@ fetch('../song_parameters.json')
     console.log(energies);
     initParticlesJS();
 
+    const playButton = document.getElementById("play-button");
+    // Function to start playing the music
+    function startMusic() {
+      // Initialize the audio context
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+      // Create a MediaElementAudioSourceNode from the audio element
+      const audioElement = document.createElement('audio');
+      audioElement.src = '../selectedSong.mp3'; // Replace with the path to your audio file
+      const audioSource = audioContext.createMediaElementSource(audioElement);
+
+      // Connect the audio source to the audio context's destination (speakers)
+      audioSource.connect(audioContext.destination);
+      function chSpeed(energy, i) {
+        setInterval(
+            function() {
+                multiplierSpeed = energies[i] * 12;
+                i++;
+                i %= energy.length;
+            }, 
+            (1000)*(512/22050)
+        );
+      }
+      // Start playing the audio
+      audioElement.play();
+      const checkInterval = setInterval(() => {
+        if (audioElement.currentTime > 0 && audioContext.currentTime > 0) {
+            // Audio is playing
+            clearInterval(checkInterval); // Stop checking
+            chSpeed(energies, energies.length - 1);
+        }
+    }, 10);
+      
+      //chSpeed(energies, 0);
+    }
+    playButton.addEventListener("click", startMusic);
     var count_particles, stats, update;
     stats = new Stats;
     stats.setMode(0);
@@ -113,14 +157,13 @@ fetch('../song_parameters.json')
     };
     
     requestAnimationFrame(update);
-    
   })
   .catch(error => {
     console.error('Errore durante il caricamento del file JSON:', error);
   });
 
 var pJS = function(tag_id, params){
-  var multiplierSpeed = 1;
+ 
   
   //var multiplierDim = 1;
   //var multiplierSpeed = energies[0];
@@ -128,17 +171,6 @@ var pJS = function(tag_id, params){
   //var arrayEnergy = energyArray;
   //console.log(energies);
 
-  function chSpeed(energy, i) {
-    setInterval(
-        function() {
-            multiplierSpeed = energies[i] * 12;
-            i++;
-            i %= energy.length;
-        }, 1000*(256/22050)
-    );
-  }
-  
-  chSpeed(energies, 0);
   
   var canvas_el = document.querySelector('#'+tag_id+' > .particles-js-canvas-el');
 
@@ -1683,7 +1715,7 @@ function initParticlesJS(){
     {
       "particles": {
         "number": {
-          "value": 40,
+          "value": particles_number,
           "density": {
             "enable": true,
             "value_area": 800
@@ -1695,7 +1727,7 @@ function initParticlesJS(){
         "shape": {
           "type": "circle",
           "stroke": {
-            "width": 5,
+            "width": width,
             "color": color_line
           },
           "polygon": {
@@ -1732,7 +1764,7 @@ function initParticlesJS(){
           "distance": 450,
           "color": color_line,
           "opacity": 0.4,
-          "width": 5
+          "width": width*0.6
         },
         "move": {
           "enable": true,
@@ -1802,9 +1834,4 @@ function initParticlesJS(){
 }
 
 
-
-
-
-
-//initParticlesJS();
 
