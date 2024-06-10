@@ -7,8 +7,8 @@ Our project, "Signs-in-Music," aims to develop a graphic and audio translator of
 ## Description
 "Signs-in-Music" bridges the gap between deaf and hearing communities by transforming sign language into a multisensory experience. Using real-time video capture and hand gesture recognition, we translate specific signs into spoken English words. These words are then used to find corresponding songs through the Spotify API. The emotional features of these songs are extracted and used to generate a dynamic particle system, creating a visual representation of the emotion behind the sign.
 
-## How to use
-1. Run the Python code 
+## How to us
+Run the Python code from main_analysis_visualization and have fun!
 
 ## How it works
 1. Real-Time Video Capture and Gesture Recognition:
