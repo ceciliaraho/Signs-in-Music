@@ -38,9 +38,9 @@ def spotify_search (song_name, client_id, client_secret, query_limit, path):
     
     features["first_beat"] = time_beats[0]
     features["bpm"] = tempo
-    
-    features["instant_energy"] = energy_data
     '''
+    features["instant_energy"] = energy_data
+    
     # Open the HTML file hosted on localhost !PAY ATTENTION TO THE PORT
     url = "http://localhost:8070/demo/index.html"
     json_object = json.dumps(features, indent=4)
