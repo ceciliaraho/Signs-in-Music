@@ -12,7 +12,7 @@ let color_line;
 let energies = [];
 let width;
 let particles_number;
-var multiplierSpeed = 1;
+var multiplierSpeed = 0;
 
 
 
@@ -30,7 +30,7 @@ fetch('../song_parameters.json')
     width = data.loudness;
     width = (width + 60) / 60;
     width = (100^width)/12;
-    
+    console.log(data);
     switch(key) {
       case 0: //C
         color = "#fe4646"
@@ -1751,7 +1751,7 @@ function initParticlesJS(){
         },
         "line_linked": {
           "enable": true,
-          "distance": 450,
+          "distance": 350,
           "color": color_line,
           "opacity": 0.4,
           "width": width*0.8
