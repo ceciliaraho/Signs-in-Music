@@ -38,6 +38,9 @@ Upon clicking the 'TRY NOW' button for a specific sign, an AJAX request is sent 
 * Spotify API for Developers: Used to search for songs matching the recognized sign language words.
 * Javascript: A flexible software sketchbook and a language for learning how to code within the context of the visual arts, used to create the particle system and visual effects based on the emotional content of the music.
 
+## Report
+`Sign_in_Music.pdf`
+
 ## Authors
 * Casale Lelio
 * Raho Cecilia
