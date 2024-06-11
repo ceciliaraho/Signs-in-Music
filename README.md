@@ -10,7 +10,7 @@ Our project, "Signs-in-Music," aims to develop a graphic and audio translator of
 ## How it works
 1. HTML files: a web interface is developed using Flask, a Python micro-framework for web development.
    * `index.html`, serves as the main page of the application. It features a greeting message from Professor Ludwig Von Drake and a 'START' button that redirects users to the '/book' route upon clicking.
-  * `book.html`, represents a digital dictionary containing sign language entries. Each sign language entry is presented on a separate page within a virtual book interface. Users can navigate through the dictionary by flipping pages, and each page provides a description and visual representation of a sign along with a 'TRY NOW' button.
+   * `book.html`, represents a digital dictionary containing sign language entries. Each sign language entry is presented on a separate page within a virtual book interface. Users can navigate through the dictionary by flipping pages, and each page provides a description and visual representation of a sign along with a 'TRY NOW' button.
 Upon clicking the 'TRY NOW' button for a specific sign, an AJAX request is sent to the Flask server at the '/analysis' route with the corresponding sign identifier. This triggers the real-time sign recognition process, allowing users to interactively practice sign language gestures.
 
 2. Real-Time Video Capture and Gesture Recognition:
