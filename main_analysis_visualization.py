@@ -5,7 +5,7 @@ import mediapipe as mp
 from tensorflow import keras
 from keras.layers import Dense
 from keras.models import Sequential, load_model
-from utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints, prob_viz
+from utils import mediapipe_detection, draw_styled_landmarks, extract_keypoints
 import os
 from flask import Flask, request, render_template, send_from_directory
 from spoty_main import spotify_search
