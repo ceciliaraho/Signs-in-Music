@@ -23,8 +23,7 @@ Upon clicking the 'TRY NOW' button for a specific sign, an AJAX request is sent 
    * The recognized word is used to search for songs with the same word in their title.
    * One of the retrieved songs is selected for further processing.
 4. Emotional Feature Extraction and Artistic Visualization:
-   * The python code extracts the main emotional features of the selected song (e.g., sadness,
-     movement).
+   * The python code extracts the main features of the selected song (e.g., instantaneous energy, loudness, key).
    * A particle system is generated based on these features, creating an immersive visual artistic
      experience.
    * Parameters of the particle system change according to the extracted features, allowing users to
