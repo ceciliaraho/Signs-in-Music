@@ -6,6 +6,8 @@ let energies = [];
 let width;
 let particles_number;
 var multiplierSpeed = 0;
+var baseFrequency;
+var thirdRatio;
 
 
 
@@ -15,7 +17,62 @@ fetch('/data/song_parameters.json')
     const data = JSON.parse(jsonString);
     console.log(data);
     var key = data.key;
+    switch(key){
+      case 0: // C
+          baseFrequency = 261.63;
+          break;
+      case 1: // C#
+          baseFrequency = 277.18;
+          break;
+      case 2: // D
+          baseFrequency = 293.66;
+          break;
+      case 3: // D#
+          baseFrequency = 311.13;
+          break;
+      case 4: // E
+          baseFrequency = 329.63;
+          break;
+      case 5: // F
+          baseFrequency = 349.23;
+          break;
+      case 6: // F#
+          baseFrequency = 369.99;
+          break;
+      case 7: // G
+          baseFrequency = 392;
+          break;
+      case 8: // G#
+          baseFrequency = 415.3;
+          break;
+      case 9: // A
+          baseFrequency = 440;
+          break;
+      case 10: // A#
+          baseFrequency = 466.16;
+          break;
+      case 11: // B
+          baseFrequency = 493.88;
+          break;
+      case -1: // not detected
+          baseFrequency = 440;
+          break;
+      default:
+          baseFrequency = 440;
+          break;
+    }
     const mode = data.mode;
+    switch (mode){
+      case 0: // minor
+          thirdRatio = 6/5;
+          break;
+      case 1: // major
+          thirdRatio = 5/4;
+          break;
+      default:
+          thirdRatio = 5/4;
+          break;
+    }
     if (mode == 0){
       key = (key + 3) % 12;
     }
@@ -92,23 +149,190 @@ fetch('/data/song_parameters.json')
     // Normalize the array
     energies = energy_array.map(val => 4 * (val / sum) * max);
     console.log(energies);
+    function updateAccentColor() {
+      const root = document.documentElement;
+      root.style.setProperty('--accent-color', color_line);
+    }
+    updateAccentColor();
     initParticlesJS();
 
     const playButton = document.getElementById("play-button");
+
+    var o1 = null, o2, o3, g, adsr, started = false;
+    var attackTime = 2.0;
+    var decayTime = 0;
+    var sustainLevel = 0.5;
+    var releaseTime = 5.0; 
+    var bpm = data.tempo;
+    
+    var fifthRatio = 1.5;
+    var triangleGain = 0;
+    var squareGain = 0;
+    var sawtoothGain = 0;
+    var customGain = 0;
+    let c;
+    var highpassFilter = null;
+    var lowpassFilter = null;
+
+    var lfoFrequency = bpm / 60;
+    var songGain;
+    var audioElement;
+
+    var changespeed;
+    
+    const playsoundButton = document.getElementById('playSound-button');
+    const stopButton = document.getElementById('stopSound-button');
+    const lowpassSlider = document.getElementById('lowpass-slider');
+    const highpassSlider = document.getElementById('highpass-slider');
+    const LPfilterFrequencyValue = document.getElementById('LPfilterFrequencyValue');
+    const HPfilterFrequencyValue = document.getElementById('HPfilterFrequencyValue');
+    const triangleKnob = document.getElementById('triangle-knob');
+    const squareKnob = document.getElementById('square-knob');
+    const sawtoothKnob = document.getElementById('sawtooth-knob');
+    const customKnob = document.getElementById('custom-knob');
+    const songKnob = document.getElementById('song-knob');
+    const octaveSelector = document.getElementById('octaveSelector');
+
     // Function to start playing the music
     function startMusic() {
       // Initialize the audio context
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (!o1) {
+      const c = new (window.AudioContext || window.webkitAudioContext)();
 
       
-      const audioElement = document.createElement('audio');
+      audioElement = document.createElement('audio');
       audioElement.src = '/data/selectedSong.mp3'; 
-      const audioSource = audioContext.createMediaElementSource(audioElement);
+      const audioSource = c.createMediaElementSource(audioElement);
+      songGain = c.createGain();
+      songGain.gain.value = 0.5;
 
-      
-      audioSource.connect(audioContext.destination);
+      audioSource.connect(songGain);
+      songGain.connect(c.destination);
+      o1 = c.createOscillator();
+      o2 = c.createOscillator();
+      o3 = c.createOscillator();
+      s1 = c.createOscillator();
+      s2 = c.createOscillator();
+      s3 = c.createOscillator();
+      t1 = c.createOscillator();
+      t2 = c.createOscillator();
+      t3 = c.createOscillator();
+
+      const customWaveform = new Float32Array([
+          0, 0.2, 0.4, 0.6, 0.8, 1, 0.8, 0.6, 0.4, 0.2, 0, -0.2, -0.4, -0.6, -0.8, -1
+      ]);
+      const zeroArray = new Array(16).fill(0);
+      c1 = c.createOscillator();
+      c2 = c.createOscillator();
+      c3 = c.createOscillator();
+
+      gTri = c.createGain();
+      gSqu = c.createGain();
+      gSaw = c.createGain();
+      gCustom = c.createGain();
+      gTotal = c.createGain();   
+      gFinal = c.createGain();
+      adsr = c.createGain();
+      lfo = c.createOscillator();
+      lfoGain = c.createGain();
+      lowpassFilter = c.createBiquadFilter();
+      highpassFilter = c.createBiquadFilter();
+
+      gTri.gain.value = 0;
+      gSqu.gain.value = 0;
+      gSaw.gain.value = 0;
+      gCustom.gain.value = 0;
+      o1.type = 'triangle';
+      o2.type = 'triangle';
+      o3.type = 'triangle';
+      s1.type = 'square';
+      s2.type = 'square';
+      s3.type = 'square';
+      t1.type = 'sawtooth';
+      t2.type = 'sawtooth';
+      t3.type = 'sawtooth';
+        
+      const periodicWave = c.createPeriodicWave(customWaveform, zeroArray);
+      c1.setPeriodicWave(periodicWave);
+      c2.setPeriodicWave(periodicWave);
+      c3.setPeriodicWave(periodicWave);
+
+      let selectedNumber = octaveSelector.value;
+      let multiplierFrequency =  selectedNumber - 3; 
+      o1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      o2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      o3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      s1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      s2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      s3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      t1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      t2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      t3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      c1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      c2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      c3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      lfo.type = 'sine';
+      lfo.frequency.value = lfoFrequency;
+
+      lowpassFilter.type = 'lowpass';
+      lowpassFilter.frequency.value = lowpassSlider.value;
+
+      highpassFilter.type = 'highpass';
+      highpassFilter.frequency.value = highpassSlider.value;
+
+        lfo.connect(lfoGain); // Connect the LFO to the LFO gain node
+        //lfoGain.connect(gTri.gain); // Connect the LFO gain node to the main gain node
+        //lfoGain.connect(gSqu.gain);
+        //lfoGain.connect(gSaw.gain);
+        //lfoGain.connect(gCustom.gain);
+        lfoGain.gain.value = 0.3;
+        lfo.start();
+
+        o1.connect(gTri);
+        o2.connect(gTri);
+        o3.connect(gTri);
+        s1.connect(gSqu);
+        s2.connect(gSqu);
+        s3.connect(gSqu);
+        t1.connect(gSaw);
+        t2.connect(gSaw);
+        t3.connect(gSaw);
+        c1.connect(gCustom);
+        c2.connect(gCustom);
+        c3.connect(gCustom);
+        gTri.connect(gTotal);
+        gSqu.connect(gTotal);
+        gSaw.connect(gTotal);
+        gCustom.connect(gTotal); // Connect the gain node to the lowpass filter
+        gTotal.connect(lowpassFilter)
+        lowpassFilter.connect(highpassFilter);
+        highpassFilter.connect(gFinal);
+        lfoGain.connect(gFinal.gain);
+        gFinal.connect(adsr);
+        adsr.connect(c.destination);
+        o1.start();
+        o2.start();
+        o3.start();
+        s1.start();
+        s2.start();
+        s3.start();
+        t1.start();
+        t2.start();
+        t3.start();
+        c1.start();
+        c2.start();
+        c3.start(); 
+        
+        gTri.gain.value = triangleGain;
+        gSqu.gain.value = squareGain;
+        gSaw.gain.value = sawtoothGain;
+        gCustom.gain.value = customGain;
+        gTotal.gain.value = 0.3;
+        adsr.gain.setValueAtTime(0, c.currentTime);
+        adsr.gain.linearRampToValueAtTime(0.4, c.currentTime + attackTime);
+        adsr.gain.linearRampToValueAtTime(sustainLevel * 0.4, c.currentTime + attackTime + decayTime);
       function chSpeed(energy, i) {
-        const changespeed = setInterval(
+        changespeed = setInterval(
             function() {
                 multiplierSpeed = energies[i] * 12;
                 i++;
@@ -124,23 +348,151 @@ fetch('/data/song_parameters.json')
       // Start playing the audio
       audioElement.play();
       const checkInterval = setInterval(() => {
-        if (audioElement.currentTime > 0 && audioContext.currentTime > 0) {
+        if (audioElement.currentTime > 0 && c.currentTime > 0) {
             clearInterval(checkInterval); // Stop checking
             chSpeed(energies, energies.length - 1);
         }
     }, 10);
-      
+      }
     }
     playButton.addEventListener("click", startMusic);
+
+
+    
+
+    stopButton.addEventListener('click', function() {
+      if (o1) {
+        //adsr.gain.linearRampToValueAtTime(0, c.currentTime + releaseTime);
+        setTimeout(() => {
+            gTri.gain.value = 0;
+            gSqu.gain.value = 0;
+            gSaw.gain.value = 0;
+            gCustom.gain.value = 0;
+            songGain.gain.value = 0;
+            o1.stop();
+            o2.stop();
+            o3.stop();
+            s1.stop();
+            s2.stop();
+            s3.stop();
+            t1.stop();
+            t2.stop();
+            t3.stop();
+            c1.stop();
+            c2.stop();
+            c3.stop();
+            lfo.stop();
+            o1 = null;
+            o2 = null;
+            o3 = null;
+            s1 = null;
+            s2 = null;
+            s3 = null;
+            t1 = null;
+            t2 = null;
+            t3 = null;
+            c1 = null;
+            c2 = null;
+            c3 = null;
+            lfo = null;
+            highpassFilter = null;
+            lowpassFilter = null;
+            audioElement.pause();
+            audioElement = null;
+            clearInterval(changespeed);
+            multiplierSpeed = 0;
+        }, 100);
+        
+        
+      }
+    });
+    
+    const minValue = parseFloat(lowpassSlider.min);
+    const maxValue = parseFloat(lowpassSlider.max);
+
+    const HPminValue = parseFloat(highpassSlider.min);
+    const HPmaxValue = parseFloat(highpassSlider.max);
+    
+    const minFrequency = 20; // Minimum frequency in Hz
+    const maxFrequency = 20000; // Maximum frequency in Hz
+
+    lowpassSlider.addEventListener('input', function() {
+      if (lowpassFilter) {
+        const sliderValue = lowpassSlider.value;
+        const minLog = Math.log(minFrequency);
+        const maxLog = Math.log(maxFrequency);
+        const scaledValue = (sliderValue - minValue) / (maxValue - minValue);
+        const frequency = Math.exp(minLog + scaledValue * (maxLog - minLog));
+        lowpassFilter.frequency.value = frequency;
+        LPfilterFrequencyValue.textContent = `${frequency.toFixed(0)} Hz`;
+      }
+    });
+
+    highpassSlider.addEventListener('input', function() {
+      if (highpassFilter) {
+        const HPsliderValue = highpassSlider.value;
+        const HPminLog = Math.log(minFrequency);
+        const HPmaxLog = Math.log(maxFrequency);
+        const HPscaledValue = (HPsliderValue - HPminValue) / (HPmaxValue - HPminValue);
+        const HPfrequency = Math.exp(HPminLog + HPscaledValue * (HPmaxLog - HPminLog));
+        highpassFilter.frequency.value = HPfrequency;
+        HPfilterFrequencyValue.textContent = `${HPfrequency.toFixed(0)} Hz`
+      }
+    });
+    
+    triangleKnob.addEventListener('input', function() {
+      triangleGain = parseFloat(triangleKnob.value);
+      gTri.gain.value = triangleGain;
+    });
+
+    squareKnob.addEventListener('input', function() {
+      squareGain = parseFloat(squareKnob.value);
+      gSqu.gain.value = squareGain;
+    });
+
+    sawtoothKnob.addEventListener('input', function() {
+      sawtoothGain = parseFloat(sawtoothKnob.value);
+      gSaw.gain.value = sawtoothGain;
+    });
+
+    customKnob.addEventListener('input', function() {
+      customGain = parseFloat(customKnob.value);
+      gCustom.gain.value = customGain;
+    });
+
+    songKnob.addEventListener('input', function() {
+      songGainValue = parseFloat(songKnob.value);
+      songGain.gain.value = songGainValue;
+    });
+
+    octaveSelector.addEventListener('input', () => {
+      selectedNumber = octaveSelector.value;
+      multiplierFrequency =  selectedNumber - 3; 
+      o1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      o2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      o3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      s1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      s2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      s3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      t1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      t2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      t3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      c1.frequency.value = baseFrequency * (2**multiplierFrequency);
+      c2.frequency.value = baseFrequency * thirdRatio * (2**multiplierFrequency);
+      c3.frequency.value = baseFrequency * fifthRatio * (2**multiplierFrequency);
+      // You can perform additional actions here with the updated selectedNumber value
+    });
+    /*
     var count_particles, stats, update;
     stats = new Stats;
     stats.setMode(0);
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
+    stats.domElement.style.bottom = '10px';
     document.body.appendChild(stats.domElement);
     count_particles = document.querySelector('.js-count-particles');
-    
+    count_particles.style.left = '0px';
+    count_particles.style.bottom = '10px';
     update = function() {
       stats.begin();
       stats.end();
@@ -151,6 +503,7 @@ fetch('/data/song_parameters.json')
     };
     
     requestAnimationFrame(update);
+    */
   })
   .catch(error => {
     console.error('Errore durante il caricamento del file JSON:', error);
