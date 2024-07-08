@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>particles.js</title>
   <style>
+
     #play-button {
         position: fixed;
         top: 10px;
@@ -15,10 +16,11 @@
         border: none;
         cursor: pointer;
     }
-    #backToBookBtn {
+    
+    #stopSound-button {
         position: fixed;
         top: 10px;
-        right: 150px;
+        right: 140px;
         padding: 10px 20px;
         font-size: 16px;
         background-color: #ffffff;
@@ -26,24 +28,156 @@
         border: none;
         cursor: pointer;
     }
+    #backToBookBtn {
+        position: fixed;
+        top: 10px;
+        right: 280px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #ffffff;
+        color: black;
+        border: none;
+        cursor: pointer;
+    }
+    #filter-sliders {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    #filter-sliders label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    #knob-container {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+
+    .knob-label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    
+    #HPfilterFrequencyValue {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+
+    #LPfilterFrequencyValue {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    #triangle-knob{
+      accent-color: var(--accent-color);
+    }
+   
+    
+    #square-knob{
+      accent-color: var(--accent-color);
+    }
+
+    
+    #sawtooth-knob{
+      accent-color: var(--accent-color);
+    }
+
+    
+    #custom-knob{
+      accent-color: var(--accent-color);
+    }
+
+    #song-knob{
+      accent-color: var(--accent-color);
+    }
+
+    #lowpass-slider{
+      accent-color: var(--accent-color);
+    }
+
+    #highpass-slider{
+      accent-color: var(--accent-color);
+    }
+
+    .octave-selector-label {
+      font-size: 16px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .octave-selector-input {
+      width: 60px;
+      height: 30px;
+      font-size: 16px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .octave-selector-input:focus {
+      border-color: var(--accent-color);
+      border-radius: 10%;
+      box-shadow: 0 0 5px var(--accent-color);
+    }
   </style>
-  <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
-  <meta name="author" content="Vincent Garreau" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<!-- count particles -->
+<!-- count particles 
 <div class="count-particles">
   <span class="js-count-particles">--</span> particles
 </div>
-
+-->
 <!-- particles.js container -->
 <div id="particles-js"></div>
 
 <button id="play-button">Play Song</button>
 <button id="backToBookBtn">Back to Book</button>
+<button id="stopSound-button">Stop Sound</button>
+
+
+
+
+<div id="filter-sliders">
+  <label for="lowpass-slider">Low-Pass Cutoff:</label>
+  <input type="range" id="lowpass-slider" min="20" max="20000" value="20000">
+  <span id="LPfilterFrequencyValue">20000 Hz</span>
+  <label for="highpass-slider">High-Pass Cutoff:</label>
+  <input type="range" id="highpass-slider" min="20" max="20000" value="20">
+  <span id="HPfilterFrequencyValue">20 Hz</span>
+</div>
+
+<div id="knob-container">
+  <label class="knob-label" for="triangle-knob">Triangle Gain:</label>
+  <input type="range" id="triangle-knob" min="0" max="1" step="0.01" value="0">
+  <label class="knob-label" for="square-knob">Square Gain:</label>
+  <input type="range" id="square-knob" min="0" max="1" step="0.01" value="0">
+  <label class="knob-label" for="sawtooth-knob">Sawtooth Gain:</label>
+  <input type="range" id="sawtooth-knob" min="0" max="1" step="0.01" value="0">
+  <label class="knob-label" for="custom-knob">Custom Gain:</label>
+  <input type="range" id="custom-knob" min="0" max="1" step="0.01" value="0">
+  <label class="knob-label" for="song-knob">Song Gain:</label>
+  <input type="range" id="song-knob" min="0" max="1" step="0.01" value="0.5">
+  <label for="octaveSelector" class="octave-selector-label">Octave:</label>
+  <input type="number" id="octaveSelector" class="octave-selector-input" min="0" max="6" value="3">
+</div>
+
+
 
 <!-- scripts -->
 <script src="{{ url_for('static', filename='js/particles.js') }}"></script>
