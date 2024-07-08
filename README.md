@@ -9,7 +9,7 @@ Our project, "Signs-in-Music," aims to develop a graphic and audio translator of
 
 ## How it works
 1. HTML files: a web interface is developed using Flask, a Python micro-framework for web development.
-   * `index.html`, serves as the main page of the application. It features a greeting message from Professor Ludwig Von Drake and a 'START' button that redirects users to the '/book' route upon clicking.
+   * `main.html`, serves as the main page of the application. It features a greeting message from Professor Ludwig Von Drake and a 'START' button that redirects users to the '/book' route upon clicking.
    * `book.html`, represents a digital dictionary containing sign language entries. Each sign language entry is presented on a separate page within a virtual book interface. Users can navigate through the dictionary by flipping pages, and each page provides a description and visual representation of a sign along with a 'TRY NOW' button.
 Upon clicking the 'TRY NOW' button for a specific sign, an AJAX request is sent to the Flask server at the '/analysis' route with the corresponding sign identifier. This triggers the real-time sign recognition process, allowing users to interactively practice sign language gestures.
 
@@ -28,6 +28,11 @@ Upon clicking the 'TRY NOW' button for a specific sign, an AJAX request is sent 
      experience.
    * Parameters of the particle system change according to the extracted features, allowing users to
      visually perceive the emotional concept expressed through sign language.
+5. Additive Synthesizer:
+   * Four base waveforms that play a chord with the same key and mode of the selected song and can be played simultaneously with the song.
+   * Two biquad filters: an highpass and a lowpass.
+   * An octave selector to choose the base octave of the chord.
+   * A Low Frequency Oscillator connected to the output gain whose frequency is related to the song bpm.
 
 ## Technology
 * HTML and CSS: Used for the graphical interface.
