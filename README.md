@@ -1,5 +1,5 @@
 # Signs-in-Music
-Sign language translator in music for the course Creative Programming and Computing
+Sign language translator in music
 
 ## Abstract
 Our project, "Signs-in-Music," aims to develop a graphic and audio translator of sign language to foster an emotional bond between hearing and deaf individuals. By translating sign language into music and visual art, we create an immersive artistic experience that reflects the emotional content expressed through sign language.
