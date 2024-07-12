@@ -46,7 +46,7 @@ Upon clicking the 'TRY NOW' button for a specific sign, an AJAX request is sent 
 ## Video Demo
 https://drive.google.com/file/d/1nZMREhP3sEu0Cq4XV6MWqqVmu2UAHTV5/view?usp=drive_link
 
-<iframe src="https://drive.google.com/file/d/1nZMREhP3sEu0Cq4XV6MWqqVmu2UAHTV5/view?usp=drive_link" width="640" height="480" allow="autoplay"></iframe>
+<iframe src="https://drive.google.com/file/d/1nZMREhP3sEu0Cq4XV6MWqqVmu2UAHTV5/preview" width="640" height="480" allow="autoplay"></iframe>
 
 ## Report
 `Sign_in_Music.pdf`
